@@ -1,39 +1,71 @@
-mport java.util.Stack;
+import java.util.Stack;
+import java.util.Deque;
+import java.util.ArrayDeque;
+import java.util.Scanner;
 
-class PalindromeChecker {
+interface PalindromeStrategy {
+    boolean check(String str);
+}
 
-    public boolean checkPalindrome(String input) {
-        if (input == null) {
+class StackStrategy implements PalindromeStrategy {
+    public boolean check(String str) {
+        if (str == null) {
             return false;
         }
-
         Stack<Character> stack = new Stack<>();
-        int length = input.length();
-
-        for (int i = 0; i < length; i++) {
-            stack.push(input.charAt(i));
+        for (int i = 0; i < str.length(); i++) {
+            stack.push(str.charAt(i));
         }
-
-        for (int i = 0; i < length; i++) {
-            if (input.charAt(i) != stack.pop()) {
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) != stack.pop()) {
                 return false;
             }
         }
-
         return true;
     }
 }
 
-public class PalindromeCheckerApp {
+class DequeStrategy implements PalindromeStrategy {
+    public boolean check(String str) {
+        if (str == null) {
+            return false;
+        }
+        Deque<Character> deque = new ArrayDeque<>();
+        for (int i = 0; i < str.length(); i++) {
+            deque.addLast(str.charAt(i));
+        }
+        while (deque.size() > 1) {
+            char first = deque.removeFirst();
+            char last = deque.removeLast();
+            if (first != last) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
 
+class PalindromeContext {
+    private PalindromeStrategy strategy;
+
+    public void setStrategy(PalindromeStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public boolean executeStrategy(String str) {
+        return strategy.check(str);
+    }
+}
+
+public class PalindromeCheckerApp {
     public static void main(String[] args) {
-        java.util.Scanner scanner = new java.util.Scanner(System.in);
-        System.out.println("Welcome to the Object-Oriented Palindrome Checker");
-        System.out.print("Enter a Name: ");
+        Scanner scanner = new Scanner(System.in);
         String name = scanner.nextLine();
 
-        PalindromeChecker checker = new PalindromeChecker();
-        boolean isPalindrome = checker.checkPalindrome(name);
+        PalindromeContext context = new PalindromeContext();
+
+        context.setStrategy(new StackStrategy());
+        boolean isPalindrome = context.executeStrategy(name);
 
         System.out.println("Input : " + name + "\nIs Palindrome? : " + isPalindrome);
         scanner.close();
