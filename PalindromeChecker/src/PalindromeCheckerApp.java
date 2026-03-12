@@ -4,8 +4,11 @@ public class PalindromeCheckerApp {
         java.util.Scanner scanner = new java.util.Scanner(System.in);
         String name = scanner.nextLine();
 
-        int n = name.length();
-        boolean isPalindrome = check(name, 0, n - 1);
+        // UC10: Normalize string by using regex to remove spaces and converting to lowercase
+        String normalized = name.replaceAll("\\s+", "").toLowerCase();
+
+        int n = normalized.length();
+        boolean isPalindrome = check(normalized, 0, n - 1);
         System.out.println("Input : " + name + "\nIs Palindrome? : " + isPalindrome);
         scanner.close();
     }
