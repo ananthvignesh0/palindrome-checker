@@ -1,73 +1,51 @@
-import java.util.Stack;
-import java.util.Deque;
-import java.util.ArrayDeque;
-import java.util.Scanner;
-
-interface PalindromeStrategy {
-    boolean check(String str);
-}
-
-class StackStrategy implements PalindromeStrategy {
-    public boolean check(String str) {
-        if (str == null) {
-            return false;
-        }
-        Stack<Character> stack = new Stack<>();
-        for (int i = 0; i < str.length(); i++) {
-            stack.push(str.charAt(i));
-        }
-        for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) != stack.pop()) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
-class DequeStrategy implements PalindromeStrategy {
-    public boolean check(String str) {
-        if (str == null) {
-            return false;
-        }
-        Deque<Character> deque = new ArrayDeque<>();
-        for (int i = 0; i < str.length(); i++) {
-            deque.addLast(str.charAt(i));
-        }
-        while (deque.size() > 1) {
-            char first = deque.removeFirst();
-            char last = deque.removeLast();
-            if (first != last) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
-class PalindromeContext {
-    private PalindromeStrategy strategy;
-
-    public void setStrategy(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public boolean executeStrategy(String str) {
-        return strategy.check(str);
-    }
-}
-
 public class PalindromeCheckerApp {
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        java.util.Scanner scanner = new java.util.Scanner(System.in);
         String name = scanner.nextLine();
 
-        PalindromeContext context = new PalindromeContext();
+        long start1 = System.nanoTime();
+        boolean res1 = checkTwoPointer(name);
+        long end1 = System.nanoTime();
 
-        context.setStrategy(new StackStrategy());
-        boolean isPalindrome = context.executeStrategy(name);
+        long start2 = System.nanoTime();
+        boolean res2 = checkReverse(name);
+        long end2 = System.nanoTime();
 
-        System.out.println("Input : " + name + "\nIs Palindrome? : " + isPalindrome);
+        long start3 = System.nanoTime();
+        boolean res3 = checkRecursive(name, 0, name.length() - 1);
+        long end3 = System.nanoTime();
+
+        System.out.println("Two Pointer: " + res1 + " Time: " + (end1 - start1) + " ns");
+        System.out.println("Reverse String: " + res2 + " Time: " + (end2 - start2) + " ns");
+        System.out.println("Recursive: " + res3 + " Time: " + (end3 - start3) + " ns");
+
         scanner.close();
+    }
+
+    private static boolean checkTwoPointer(String str) {
+        if (str == null) return false;
+        int left = 0, right = str.length() - 1;
+        while (left < right) {
+            if (str.charAt(left) != str.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    private static boolean checkReverse(String str) {
+        if (str == null) return false;
+        String reversed = new StringBuilder(str).reverse().toString();
+        return str.equals(reversed);
+    }
+
+    private static boolean checkRecursive(String str, int left, int right) {
+        if (str == null) return false;
+        if (left >= right) return true;
+        if (str.charAt(left) != str.charAt(right)) return false;
+        return checkRecursive(str, left + 1, right - 1);
     }
 }
